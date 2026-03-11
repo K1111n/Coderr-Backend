@@ -1,12 +1,12 @@
 # Coderr Backend
 
-REST API für die Coderr-Plattform – eine Freelance-Marketplace-App, auf der Business-User Angebote erstellen und Customer-User diese buchen und bewerten können.
+REST API for the Coderr platform – a freelance marketplace where business users can create offers and customers can book and review them.
 
 **Stack:** Django 6 · Django REST Framework · SQLite · Token Authentication
 
 ---
 
-## Voraussetzungen
+## Prerequisites
 
 - Python 3.11+
 - pip
@@ -15,14 +15,14 @@ REST API für die Coderr-Plattform – eine Freelance-Marketplace-App, auf der B
 
 ## Installation
 
-### 1. Repository klonen
+### 1. Clone the repository
 
 ```bash
 git clone <repository-url>
 cd Coderr-Backend
 ```
 
-### 2. Virtuelle Umgebung erstellen und aktivieren
+### 2. Create and activate a virtual environment
 
 **Mac / Linux**
 ```bash
@@ -36,7 +36,7 @@ python -m venv env
 env\Scripts\activate
 ```
 
-### 3. Abhängigkeiten installieren
+### 3. Install dependencies
 
 **Mac / Linux**
 ```bash
@@ -48,7 +48,21 @@ pip3 install -r requirements.txt
 pip install -r requirements.txt
 ```
 
-### 4. Datenbank migrieren
+### 4. Set up environment variables
+
+**Mac / Linux**
+```bash
+cp .env.example .env
+```
+
+**Windows**
+```bash
+copy .env.example .env
+```
+
+Then fill in the `.env` file with your own `SECRET_KEY`.
+
+### 5. Run database migrations
 
 **Mac / Linux**
 ```bash
@@ -60,7 +74,7 @@ python3 manage.py migrate
 python manage.py migrate
 ```
 
-### 5. (Optional) Superuser erstellen
+### 6. (Optional) Create a superuser
 
 **Mac / Linux**
 ```bash
@@ -72,7 +86,7 @@ python3 manage.py createsuperuser
 python manage.py createsuperuser
 ```
 
-### 6. Entwicklungsserver starten
+### 7. Start the development server
 
 **Mac / Linux**
 ```bash
@@ -84,57 +98,57 @@ python3 manage.py runserver
 python manage.py runserver
 ```
 
-Die API ist anschließend unter `http://127.0.0.1:8000/` erreichbar.
+The API will be available at `http://127.0.0.1:8000/`.
 
 ---
 
-## Projektstruktur
+## Project Structure
 
 ```
 Coderr-Backend/
-├── core/               # Django-Projektkonfiguration (settings, urls)
-├── users_app/          # Registrierung, Login, Benutzerprofile
-├── offers_app/         # Angebote und Angebotsdetails
-├── orders_app/         # Bestellungen
-├── reviews_app/        # Bewertungen
+├── core/               # Django project configuration (settings, urls)
+├── users_app/          # Registration, login, user profiles
+├── offers_app/         # Offers and offer details
+├── orders_app/         # Orders
+├── reviews_app/        # Reviews
 ├── requirements.txt
 └── manage.py
 ```
 
 ---
 
-## API-Übersicht
+## API Overview
 
-Alle Endpunkte sind unter `/api/` erreichbar. Eine vollständige Dokumentation befindet sich in [api_endpoints.md](api_endpoints.md).
+All endpoints are available under `/api/`. Full documentation can be found in [api_endpoints.md](api_endpoints.md).
 
-| Bereich       | Endpunkt                                      | Methoden          |
-|---------------|-----------------------------------------------|-------------------|
-| Auth          | `/api/registration/`                          | POST              |
-| Auth          | `/api/login/`                                 | POST              |
-| Profile       | `/api/profile/<id>/`                          | GET, PATCH        |
-| Profile       | `/api/profiles/business/`                     | GET               |
-| Profile       | `/api/profiles/customer/`                     | GET               |
-| Offers        | `/api/offers/`                                | GET, POST         |
-| Offers        | `/api/offers/<id>/`                           | GET, PATCH, DELETE|
-| Offers        | `/api/offerdetails/<id>/`                     | GET               |
-| Orders        | `/api/orders/`                                | GET, POST         |
-| Orders        | `/api/orders/<id>/`                           | PATCH, DELETE     |
-| Orders        | `/api/order-count/<business_user_id>/`        | GET               |
-| Orders        | `/api/completed-order-count/<business_user_id>/` | GET            |
-| Reviews       | `/api/reviews/`                               | GET, POST         |
-| Reviews       | `/api/reviews/<id>/`                          | PATCH, DELETE     |
-| Stats         | `/api/base-info/`                             | GET               |
+| Section       | Endpoint                                         | Methods           |
+|---------------|--------------------------------------------------|-------------------|
+| Auth          | `/api/registration/`                             | POST              |
+| Auth          | `/api/login/`                                    | POST              |
+| Profile       | `/api/profile/<id>/`                             | GET, PATCH        |
+| Profile       | `/api/profiles/business/`                        | GET               |
+| Profile       | `/api/profiles/customer/`                        | GET               |
+| Offers        | `/api/offers/`                                   | GET, POST         |
+| Offers        | `/api/offers/<id>/`                              | GET, PATCH, DELETE|
+| Offers        | `/api/offerdetails/<id>/`                        | GET               |
+| Orders        | `/api/orders/`                                   | GET, POST         |
+| Orders        | `/api/orders/<id>/`                              | PATCH, DELETE     |
+| Orders        | `/api/order-count/<business_user_id>/`           | GET               |
+| Orders        | `/api/completed-order-count/<business_user_id>/` | GET               |
+| Reviews       | `/api/reviews/`                                  | GET, POST         |
+| Reviews       | `/api/reviews/<id>/`                             | PATCH, DELETE     |
+| Stats         | `/api/base-info/`                                | GET               |
 
-### Authentifizierung
+### Authentication
 
-Alle Endpunkte (außer `/api/registration/`, `/api/login/`, `/api/offers/` GET und `/api/base-info/`) erfordern einen Token im Header:
+All endpoints (except `/api/registration/`, `/api/login/`, `GET /api/offers/` and `/api/base-info/`) require a token in the request header:
 
 ```
-Authorization: Token <dein-token>
+Authorization: Token <your-token>
 ```
 
 ---
 
-## Admin-Panel
+## Admin Panel
 
-Das Django-Adminpanel ist unter `http://127.0.0.1:8000/admin/` erreichbar (Superuser erforderlich).
+The Django admin panel is available at `http://127.0.0.1:8000/admin/` (superuser required).
