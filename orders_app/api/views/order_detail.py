@@ -1,5 +1,6 @@
 # Third-party imports
 from rest_framework import status
+from rest_framework.exceptions import NotFound
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -12,6 +13,12 @@ from orders_app.models import Order
 
 class OrderDetailView(APIView):
     """Updates the status of an order (business only) or deletes it (admin only)."""
+
+    def initial(self, request, *args, **kwargs):
+        pk = kwargs.get('pk')
+        if pk and not Order.objects.filter(pk=pk).exists():
+            raise NotFound('Order not found.')
+        super().initial(request, *args, **kwargs)
 
     def get_permissions(self):
         if self.request.method == 'DELETE':
