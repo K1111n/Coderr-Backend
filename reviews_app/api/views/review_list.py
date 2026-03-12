@@ -36,7 +36,7 @@ class ReviewListCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = ReviewSerializer(data=request.data)
+        serializer = ReviewSerializer(data=request.data, context={'request': request})
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         serializer.save(reviewer=request.user)
