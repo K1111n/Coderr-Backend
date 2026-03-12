@@ -45,9 +45,15 @@ class OfferListCreateView(APIView):
         if params.get('max_delivery_time'):
             queryset = queryset.annotate(min_d=Min('details__delivery_time_in_days'))
         if params.get('min_price'):
-            queryset = queryset.filter(min_p__gte=params['min_price'])
+            try:
+                queryset = queryset.filter(min_p__gte=float(params['min_price']))
+            except (ValueError, TypeError):
+                raise ValueError('min_price')
         if params.get('max_delivery_time'):
-            queryset = queryset.filter(min_d__lte=params['max_delivery_time'])
+            try:
+                queryset = queryset.filter(min_d__lte=int(params['max_delivery_time']))
+            except (ValueError, TypeError):
+                raise ValueError('max_delivery_time')
         return queryset
 
     def _apply_ordering(self, queryset, params):
@@ -62,7 +68,10 @@ class OfferListCreateView(APIView):
     def get(self, request):
         queryset = Offer.objects.all()
         queryset = self._apply_filters(queryset, request.query_params)
-        queryset = self._apply_price_and_delivery_filters(queryset, request.query_params)
+        try:
+            queryset = self._apply_price_and_delivery_filters(queryset, request.query_params)
+        except ValueError as e:
+            return Response({'error': f'Invalid value for {e}.'}, status=status.HTTP_400_BAD_REQUEST)
         queryset = self._apply_ordering(queryset, request.query_params)
         paginator = OfferPagination()
         page = paginator.paginate_queryset(queryset, request)
