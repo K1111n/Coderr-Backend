@@ -1,10 +1,8 @@
-# Third-party imports
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-# Local imports
 from reviews_app.api.permissions import IsReviewer
 from reviews_app.api.serializers import ReviewSerializer
 from reviews_app.models import Review
@@ -16,12 +14,14 @@ class ReviewDetailView(APIView):
     permission_classes = [IsAuthenticated, IsReviewer]
 
     def get_object(self, pk):
+        """Returns the review with the given pk, or None if not found."""
         try:
             return Review.objects.get(pk=pk)
         except Review.DoesNotExist:
             return None
 
     def patch(self, request, pk):
+        """Partially updates a review. Only accessible by the review author."""
         review = self.get_object(pk)
         if review is None:
             return Response({'error': 'Review not found.'}, status=status.HTTP_404_NOT_FOUND)
@@ -33,6 +33,7 @@ class ReviewDetailView(APIView):
         return Response(serializer.data)
 
     def delete(self, request, pk):
+        """Deletes a review. Only accessible by the review author."""
         review = self.get_object(pk)
         if review is None:
             return Response({'error': 'Review not found.'}, status=status.HTTP_404_NOT_FOUND)

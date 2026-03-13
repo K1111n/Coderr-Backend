@@ -1,7 +1,5 @@
-# Third-party imports
 from django.urls import path
 
-# Local imports
 from orders_app.api.views import (
     CompletedOrderCountView,
     OrderCountView,

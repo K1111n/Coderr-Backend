@@ -1,10 +1,8 @@
-# Third-party imports
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-# Local imports
 from offers_app.models import OfferDetail
 from orders_app.api.permissions import IsCustomerUser
 from orders_app.api.serializers import OrderCreateSerializer, OrderSerializer
@@ -15,11 +13,13 @@ class OrderListCreateView(APIView):
     """Lists orders for the current user or creates a new order."""
 
     def get_permissions(self):
+        """Returns IsCustomerUser for POST, IsAuthenticated for GET."""
         if self.request.method == 'POST':
             return [IsAuthenticated(), IsCustomerUser()]
         return [IsAuthenticated()]
 
     def get(self, request):
+        """Returns all orders belonging to the current user as customer or business."""
         orders = Order.objects.filter(
             customer_user=request.user
         ) | Order.objects.filter(business_user=request.user)
@@ -27,6 +27,7 @@ class OrderListCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        """Creates a new order from an offer detail. Only accessible by customer users."""
         serializer = OrderCreateSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -1,4 +1,3 @@
-# Third-party imports
 from rest_framework.permissions import BasePermission
 
 
@@ -8,6 +7,7 @@ class IsBusinessUser(BasePermission):
     message = 'Only business users can perform this action.'
 
     def has_permission(self, request, view):
+        """Returns True if the user has a business profile."""
         return hasattr(request.user, 'profile') and request.user.profile.type == 'business'
 
 
@@ -17,4 +17,5 @@ class IsOfferOwner(BasePermission):
     message = 'Only the owner of this offer can perform this action.'
 
     def has_object_permission(self, request, view, obj):
+        """Returns True if the requesting user is the offer owner."""
         return obj.user == request.user

@@ -1,7 +1,5 @@
-# Third-party imports
 from django.urls import path
 
-# Local imports
 from reviews_app.api.views import ReviewDetailView, ReviewListCreateView
 
 urlpatterns = [

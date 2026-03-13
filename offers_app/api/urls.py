@@ -1,7 +1,5 @@
-# Third-party imports
 from django.urls import path
 
-# Local imports
 from offers_app.api.views import BaseInfoView, OfferDetailItemView, OfferDetailView, OfferListCreateView
 
 urlpatterns = [

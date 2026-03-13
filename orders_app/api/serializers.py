@@ -4,6 +4,8 @@ from orders_app.models import Order
 
 
 class OrderSerializer(serializers.ModelSerializer):
+    """Serializer for retrieving and updating an order's status."""
+
     class Meta:
         model = Order
         fields = [
@@ -19,4 +21,6 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class OrderCreateSerializer(serializers.Serializer):
+    """Serializer for creating an order from an offer detail."""
+
     offer_detail_id = serializers.IntegerField()
