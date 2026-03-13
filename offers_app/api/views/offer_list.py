@@ -1,14 +1,10 @@
-# Standard library
 from django.db.models import Min, Q
-
-# Third-party imports
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-# Local imports
 from offers_app.api.permissions import IsBusinessUser
 from offers_app.api.serializers import OfferCreateSerializer, OfferListSerializer
 from offers_app.models import Offer
@@ -25,6 +21,7 @@ class OfferListCreateView(APIView):
     """Lists all offers with filtering/ordering or creates a new offer."""
 
     def get_permissions(self):
+        """Returns AllowAny for GET, IsBusinessUser for POST."""
         if self.request.method == 'POST':
             return [IsAuthenticated(), IsBusinessUser()]
         return [AllowAny()]
@@ -38,7 +35,10 @@ class OfferListCreateView(APIView):
         return queryset
 
     def _apply_price_and_delivery_filters(self, queryset, params):
-        """Annotates and filters by min_price and max_delivery_time."""
+        """Annotates and filters by min_price and max_delivery_time.
+
+        Raises ValueError if a filter value cannot be cast to the expected type.
+        """
         ordering = params.get('ordering', '')
         if params.get('min_price') or 'min_price' in ordering:
             queryset = queryset.annotate(min_p=Min('details__price'))
@@ -66,6 +66,7 @@ class OfferListCreateView(APIView):
         return queryset.order_by(order_map.get(ordering, '-updated_at'))
 
     def get(self, request):
+        """Returns a paginated, filtered list of offers."""
         queryset = Offer.objects.all()
         queryset = self._apply_filters(queryset, request.query_params)
         try:
@@ -79,6 +80,7 @@ class OfferListCreateView(APIView):
         return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
+        """Creates a new offer for the authenticated business user."""
         serializer = OfferCreateSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

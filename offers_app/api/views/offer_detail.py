@@ -1,10 +1,8 @@
-# Third-party imports
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-# Local imports
 from offers_app.api.permissions import IsOfferOwner
 from offers_app.api.serializers import OfferDetailSerializer, OfferRetrieveSerializer, OfferUpdateSerializer
 from offers_app.models import Offer, OfferDetail
@@ -14,17 +12,20 @@ class OfferDetailView(APIView):
     """Retrieves, updates or deletes a specific offer."""
 
     def get_permissions(self):
+        """Returns IsOfferOwner for PATCH and DELETE, IsAuthenticated for GET."""
         if self.request.method in ('PATCH', 'DELETE'):
             return [IsAuthenticated(), IsOfferOwner()]
         return [IsAuthenticated()]
 
     def get_object(self, pk):
+        """Returns the offer with the given pk, or None if not found."""
         try:
             return Offer.objects.get(pk=pk)
         except Offer.DoesNotExist:
             return None
 
     def get(self, request, pk):
+        """Returns a single offer by pk."""
         offer = self.get_object(pk)
         if offer is None:
             return Response({'error': 'Offer not found.'}, status=status.HTTP_404_NOT_FOUND)
@@ -32,6 +33,7 @@ class OfferDetailView(APIView):
         return Response(serializer.data)
 
     def patch(self, request, pk):
+        """Partially updates an offer. Only accessible by the offer owner."""
         offer = self.get_object(pk)
         if offer is None:
             return Response({'error': 'Offer not found.'}, status=status.HTTP_404_NOT_FOUND)
@@ -43,6 +45,7 @@ class OfferDetailView(APIView):
         return Response(OfferUpdateSerializer(updated_offer).data)
 
     def delete(self, request, pk):
+        """Deletes an offer. Only accessible by the offer owner."""
         offer = self.get_object(pk)
         if offer is None:
             return Response({'error': 'Offer not found.'}, status=status.HTTP_404_NOT_FOUND)
@@ -57,6 +60,7 @@ class OfferDetailItemView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
+        """Returns a single offer detail by pk."""
         try:
             detail = OfferDetail.objects.get(pk=pk)
         except OfferDetail.DoesNotExist:

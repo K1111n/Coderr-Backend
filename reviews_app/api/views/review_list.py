@@ -1,10 +1,8 @@
-# Third-party imports
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-# Local imports
 from reviews_app.api.permissions import IsCustomerUser
 from reviews_app.api.serializers import ReviewSerializer
 from reviews_app.models import Review
@@ -14,6 +12,7 @@ class ReviewListCreateView(APIView):
     """Lists all reviews with optional filters or creates a new review."""
 
     def get_permissions(self):
+        """Returns IsCustomerUser for POST, IsAuthenticated for GET."""
         if self.request.method == 'POST':
             return [IsAuthenticated(), IsCustomerUser()]
         return [IsAuthenticated()]
@@ -31,11 +30,13 @@ class ReviewListCreateView(APIView):
         return queryset
 
     def get(self, request):
+        """Returns a filtered list of reviews."""
         queryset = self._build_queryset(request.query_params)
         serializer = ReviewSerializer(queryset, many=True)
         return Response(serializer.data)
 
     def post(self, request):
+        """Creates a new review for the authenticated customer user."""
         serializer = ReviewSerializer(data=request.data, context={'request': request})
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
